@@ -1,1 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+@import "assets/layout/styles/layout/layout.scss";
+
+// primeng
+@import "../node_modules/primeicons/primeicons.css";
+@import "../node_modules/primeng/resources/primeng.css";
+
+// prime flex
+@import "../node_modules/primeflex/primeflex.css";
+
+// tailwind theme
+@import "assets/layout/styles/theme/tailwind-light/theme.css";
