@@ -43,17 +43,15 @@ import { FormsModule } from '@angular/forms';
       >
         <ng-template pTemplate="caption">
           <div class="flex">
-            <p-iconField iconPosition="left" class="ml-auto">
-              <p-inputIcon>
-                <i class="pi pi-search"></i>
-              </p-inputIcon>
+            <span class="p-input-icon-right ml-auto">
               <input
-                pInputText
                 type="text"
+                pInputText
                 (input)="applyFilterGlobal($event, 'contains')"
-                placeholder="Search keyword"
+                placeholder="Search"
               />
-            </p-iconField>
+              <i class="pi pi-search"></i>
+            </span>
           </div>
         </ng-template>
         <ng-template pTemplate="header"
