@@ -9,6 +9,9 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
+import { DropdownModule } from 'primeng/dropdown';
+import { TagModule } from 'primeng/tag';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-case-records',
@@ -21,6 +24,9 @@ import { FormsModule } from '@angular/forms';
     IconFieldModule,
     InputIconModule,
     FormsModule,
+    DropdownModule,
+    TagModule,
+    DialogModule,
   ],
   template: `
     <div class="card">
@@ -28,8 +34,8 @@ import { FormsModule } from '@angular/forms';
       <p-table
         #dt
         [value]="caseList"
-        [tableStyle]="{ 'min-width': '110rem' }"
-        styleClass="p-datatable-lg"
+        [tableStyle]="{ 'min-width': '190rem' }"
+        styleClass="p-datatable-sm"
         [paginator]="true"
         [rows]="5"
         [rowsPerPageOptions]="[5, 10, 20, 30]"
@@ -90,6 +96,118 @@ import { FormsModule } from '@angular/forms';
               Complaint <p-sortIcon field="complaint"></p-sortIcon>
             </th>
           </tr>
+          <tr>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="firstName"
+                placeholder="Search"
+                ariaLabel="Filter Name"
+              />
+            </th>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="date"
+                placeholder="Search"
+                ariaLabel="Filter Date"
+              />
+            </th>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="regNo"
+                placeholder="Search"
+                ariaLabel="Filter Reg No."
+              />
+            </th>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="age"
+                placeholder="Search"
+                ariaLabel="Filter age"
+              />
+            </th>
+            <th>
+              <!-- <p-columnFilter
+                type="text"
+                field="sex"
+                placeholder="Search"
+                ariaLabel="Filter sex"
+              /> -->
+              <p-columnFilter
+                field="status"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
+                >
+                  <p-dropdown
+                    [options]="['Male', 'Female']"
+                    (onChange)="filter($event.value)"
+                    placeholder="Any"
+                    [showClear]="true"
+                  >
+                    <!-- <ng-template let-option pTemplate="item">
+                      <p-tag [value]="option.value" />
+                    </ng-template> -->
+                  </p-dropdown>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="address"
+                placeholder="Search"
+                ariaLabel="Filter address"
+              />
+            </th>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="occupation"
+                placeholder="Search"
+                ariaLabel="Filter occupation"
+              />
+            </th>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="religion"
+                placeholder="Search"
+                ariaLabel="Filter religion"
+              />
+            </th>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="maritalStatus"
+                placeholder="Search Status"
+                ariaLabel="Filter Marital Status"
+              />
+            </th>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="phone"
+                placeholder="Search"
+                ariaLabel="Filter Phone"
+              />
+            </th>
+            <th>
+              <p-columnFilter
+                type="text"
+                field="complaint"
+                placeholder="Search"
+                ariaLabel="Filter Complaint"
+              />
+            </th>
+          </tr>
         </ng-template>
         <ng-template pTemplate="body" let-case>
           <tr>
@@ -105,7 +223,27 @@ import { FormsModule } from '@angular/forms';
             <td>{{ case.religion }}</td>
             <td>{{ case.maritalStatus }}</td>
             <td>{{ case.phone }}</td>
-            <td>{{ case.complaint }}</td>
+            <td
+              p-button
+              type="button"
+              class="p-element p-ripple p-button-text p-button-plain p-button p-component m-2 p-1"
+              (click)="showComplaint(case.id)"
+            >
+              <span class="p-button-label">{{
+                case.complaint.slice(0, 40) + '...'
+              }}</span>
+            </td>
+            <p-dialog
+              [(visible)]="visible"
+              [modal]="true"
+              showEffect="fade"
+              [style]="{ width: '30vw' }"
+              [breakpoints]="{ '960px': '75vw' }"
+            >
+              <p class="line-height-3 m-0">
+                {{ tempComplaint1 }}
+              </p>
+            </p-dialog>
           </tr>
         </ng-template>
         <ng-template pTemplate="paginatorleft"></ng-template>
@@ -128,8 +266,10 @@ export class CaseRecordsComponent {
   caseService: CaseService = inject(CaseService);
 
   constructor() {
-    this.caseList = this.caseService.getAllCases();
-    this.initialValue = [...this.caseList];
+    this.caseService.getAllCases().then((caseList: Case[]) => {
+      this.caseList = caseList;
+      this.initialValue = [...caseList];
+    });
     this.loading = false;
   }
 
@@ -168,5 +308,26 @@ export class CaseRecordsComponent {
 
   applyFilterGlobal($event: any, stringVal: string) {
     this.dt.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
+
+  visible: boolean = false;
+
+  tempComplaint: Case | undefined;
+
+  tempComplaint1 = '';
+
+  // TODO: ADD PARAMETER TO TAKE CASE ID AND STORE COMPLAINT IN VARIABLE, SHOW IT IN A DIALOG
+  showComplaint(id: number) {
+    this.caseService.getCaseById(id).then((case1: Case | undefined) => {
+      this.tempComplaint = case1;
+    });
+
+    if (this.tempComplaint !== undefined) {
+      console.log(this.tempComplaint.complaint);
+      console.log(this.tempComplaint);
+    }
+
+    this.tempComplaint1 = this.tempComplaint?.complaint ?? '';
+    this.visible = true;
   }
 }
