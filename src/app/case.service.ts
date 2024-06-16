@@ -10,9 +10,10 @@ export class CaseService {
   caseList: Case[] = [];
 
   url1 = 'http://localhost:3000/cases';
+  url = 'http://localhost:8080/patient';
 
   async getAllCases(): Promise<Case[]> {
-    const data = await fetch(this.url1);
+    const data = await fetch(this.url);
 
     const data1 = await data.json().then((x) =>
       x.map((obj: Case) => {
@@ -24,7 +25,7 @@ export class CaseService {
   }
 
   async getCaseById(id: number): Promise<Case | undefined> {
-    const data = await fetch(`${this.url1}/${id}`);
+    const data = await fetch(`${this.url}/${id}`);
     return (await data.json()) ?? {};
   }
 }
